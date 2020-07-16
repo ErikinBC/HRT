@@ -68,7 +68,7 @@ class hrt():
         # Fit model to each column
         self.cmdls = {j: {'mdl':[], 'sig':0} for j in range(self.p)}
         for jj, isbin in enumerate(self.idx_bin):
-            tmp_X, tmp_y = np.delete(X_test_circ,jj,1), X_test_circ[:,jj]
+            tmp_X, tmp_y = np.delete(X,jj,1), X[:,jj]
             if isbin:
                 self.cmdls[jj]['mdl'] = LogisticRegression(penalty='none').fit(tmp_X, tmp_y)
             else:
