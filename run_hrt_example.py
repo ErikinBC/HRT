@@ -15,10 +15,10 @@ from sklearn.linear_model import LogisticRegression, LinearRegression
 # ---- Random circle data ---- #
 np.random.seed(1234)
 n_circ = 1000
-pnoise = 5  # Number of continuous/binary noise features
-X_circ = np.random.randn(n_circ,2+5)
-X_circ = X_circ + np.random.randn(n_circ,1)
-X_circ = np.hstack([X_circ,np.where(sigmoid(X_circ[:,2:]) > 0.5, 1, 0)])
+pnoise = 3  # Number of continuous/binary noise features
+X_circ = np.random.randn(n_circ,2+pnoise)
+X_circ = X_circ + 1.0*np.random.randn(n_circ,1)
+X_circ = np.hstack([X_circ,np.where(sigmoid(X_circ) > np.random.rand(n_circ,2+pnoise),1,0)])
 y_circ = np.where(np.apply_along_axis(arr=X_circ[:,0:2],axis=1,func1d= lambda x: np.sqrt(np.sum(x**2)) ) > 1.2,1,0)
 
 cn_type_circ = np.repeat('gaussian',X_circ.shape[1])
@@ -109,4 +109,7 @@ class hrt():
         
 inference = hrt(mdl=clf)
 inference.fit(X_train_circ)
-inference.pvals(X_test_circ, y_test_circ, 250)
+inference.pvals(X_test_circ, y_test_circ, 100)
+
+res = pd.DataFrame({'pval':[inference.cmdls[m]['pval'] for m in inference.cmdls]})
+print(res.reset_index().assign(is_noise = lambda x: np.where(x.index <= 1, False, True)))
